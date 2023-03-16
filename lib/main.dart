@@ -11,6 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  await Hive.openBox('themedata');
   Hive.registerAdapter(WoodsAdapter());
   Hive.registerAdapter(StoneAdapter());
   await Hive.openBox<Woods>('woods');
@@ -68,7 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Main'),
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
+        ],
       ),
       body: Center(
         child: Column(
