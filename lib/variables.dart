@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 part 'variables.g.dart';
 
 @HiveType(typeId: 1)
-class Woods extends HiveObject with ChangeNotifier {
+class Woods extends HiveObject {
   @HiveField(0)
   late int woodcount = 0;
 }
