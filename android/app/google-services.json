@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "415058083242",
+    "project_id": "evince-pursuit-7991a",
+    "storage_bucket": "evince-pursuit-7991a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415058083242:android:7cd2e7294ef121c3fa3fd3",
+        "android_client_info": {
+          "package_name": "com.lousyx.evincepursuit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415058083242-e2fdn2141q2sp7g54dvkgovq1ejd762e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNCs2VTtyBE6dboHgwTZGOH81ABPT8VwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "415058083242-e2fdn2141q2sp7g54dvkgovq1ejd762e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
