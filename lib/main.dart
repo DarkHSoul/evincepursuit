@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evincepursuit/providers/google-sign-in.dart';
 import 'package:evincepursuit/variables.dart';
@@ -6,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:hive/hive.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ));
 }
 
@@ -81,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Provider.of<GoogleSignInProvider>(context, listen: false);
                   provider.googleLogin();
                 },
-                child: Text("Click to sign in to Google")),
+                child: const Text("Click to sign in to Google")),
             const Text(
               'You have pushed the button this many times:',
             ),
