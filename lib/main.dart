@@ -5,11 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
+import 'dart:async';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
+import 'Settings/settings.dart';
+
+SnackBar? snackboi;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final appDocDir = await getApplicationDocumentsDirectory();
+  Hive.init(appDocDir.path);
   await Hive.initFlutter();
   await Hive.openBox('themedata');
   Hive.registerAdapter(WoodsAdapter());
@@ -46,23 +52,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   final firestoreInstance = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
-  Future<void> _saveCounterToFirestore(int counter) async {
-    final userId = auth.currentUser?.uid;
+  Timer? timer;
 
-    await firestoreInstance
-        .collection('users')
-        .doc(userId)
-        .set({'counter': counter});
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-      _saveCounterToFirestore(_counter);
-    });
+  @override
+  void dispose() {
+    timer?.cancel(); // cancel the timer when the widget is disposed
+    super.dispose();
   }
 
   @override
@@ -71,7 +68,15 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Main'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsPage(),
+                    ));
+              },
+              icon: const Icon(Icons.settings))
         ],
       ),
       body: Center(
@@ -85,18 +90,62 @@ class _MyHomePageState extends State<MyHomePage> {
                   provider.googleLogin();
                 },
                 child: const Text("Click to sign in to Google")),
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
             ValueListenableBuilder(
               valueListenable: Hive.box<Woods>('woods').listenable(),
               builder: (context, box, _) {
                 final woods = box.get(0, defaultValue: Woods());
-                return Text('Wood count: ${woods?.woodcount}');
+                final woodCutters = box.get(1, defaultValue: Woods());
+                final people = box.get(2, defaultValue: Woods());
+                DateTime? lastUpdateTime = DateTime.now();
+
+                timer = Timer.periodic(
+                  const Duration(seconds: 1),
+                  (timer) {
+                    final now = DateTime.now();
+                    final elapsed =
+                        now.difference(lastUpdateTime!).inMilliseconds / 1000;
+                    woods!.woodcount +=
+                        (woodCutters!.woodCutters * elapsed).toInt();
+                    box.put(0, woods);
+                    lastUpdateTime = now;
+                  },
+                );
+
+                return Card(
+                    child: Column(
+                  children: [
+                    TextButton(
+                      onPressed: () {},
+                      child: Text('Wood count: ${woodCutters!.woodCutters} '),
+                    ),
+                    InkWell(
+                      child: TextButton(
+                          onPressed: () {
+                            if (people!.people > 0) {
+                              woodCutters.woodCutters++;
+                              people.people--;
+                              box.put(1, woodCutters);
+                              box.put(2, people);
+                            }
+                          },
+                          onLongPress: () {
+                            if (woodCutters.woodCutters > 0) {
+                              woodCutters.woodCutters--;
+                              people!.people++;
+                              box.put(1, woodCutters);
+                            }
+                          },
+                          child:
+                              Text('WoodCutters: ${woodCutters.woodCutters}')),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          people.people++;
+                          box.put(2, people);
+                        },
+                        child: Text('People: ${people!.people}'))
+                  ],
+                ));
               },
             ),
             ValueListenableBuilder(
@@ -115,11 +164,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
